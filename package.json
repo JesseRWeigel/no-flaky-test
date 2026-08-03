@@ -1,0 +1,47 @@
+{
+  "name": "eslint-plugin-no-flaky-test",
+  "version": "0.1.0",
+  "description": "Six ESLint rules for the mechanisms that actually make JavaScript tests flaky, each measured against real test suites for false positives",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/",
+    "docs/rules/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "flaky",
+    "flaky-tests",
+    "test",
+    "determinism"
+  ],
+  "license": "MIT",
+  "author": "Jesse Weigel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JesseRWeigel/no-flaky-test.git"
+  },
+  "homepage": "https://jesserweigel.github.io/no-flaky-test/",
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.57.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/parser": "^8.58.1",
+    "eslint": "^9.39.0"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "verify": "bash scripts/verify.sh"
+  }
+}
