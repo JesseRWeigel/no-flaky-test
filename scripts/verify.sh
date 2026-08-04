@@ -65,24 +65,40 @@ fi
 echo
 echo "2. unit suite (every invalid case paired with a valid negative control)"
 if node --test "test/**/*.test.mjs" >"$TMP/unit.log" 2>&1; then
-  grep -E '^# (tests|pass|fail)' "$TMP/unit.log" | sed 's/^/        /'
-  ok "$(grep -E '^# pass' "$TMP/unit.log" | grep -oE '[0-9]+') unit tests passed"
+  # node --test prints its summary with an information glyph, not with '#'. Matching '^# pass'
+  # found nothing and printed "ok    unit tests passed" with an empty count, which is a claim
+  # about a number that was never read.
+  grep -E '(tests|pass|fail) [0-9]+' "$TMP/unit.log" | head -3 | sed 's/^/        /'
+  units=$(grep -oE '(^|[^a-z])pass [0-9]+' "$TMP/unit.log" | grep -oE '[0-9]+' | head -1)
+  assertions=$(grep -cE '^\s+(\.\.\.FILE|\{ \.\.\.FILE|\{ filename:)' test/rules.test.mjs)
+  if [ -z "$units" ]; then
+    bad "the unit suite passed but its test count could not be read from the output"
+  else
+    ok "$units test cases passed, covering $assertions rule fixtures"
+  fi
 else
   bad "unit suite"; grep -E '✖|AssertionError|Error' "$TMP/unit.log" | head -10 | sed 's/^/        /'
 fi
 
 # The count of negative controls is a claim like any other, so it is counted rather than asserted.
-controls=$(node -e "
+# The first version of this counter matched the valid and invalid blocks together and reported the
+# total as if it were all negative controls.
+counts=$(node -e "
 const t = require('fs').readFileSync('test/rules.test.mjs', 'utf8');
-const m = t.match(/valid: \[([\s\S]*?)\n  \],/g) || [];
-let n = 0;
-for (const block of m) n += (block.match(/\{ \.\.\.FILE|\{ filename:|^      \.\.\.FILE/gm) || []).length;
-console.log(n);
+let valid = 0, invalid = 0;
+for (const b of t.matchAll(/(valid|invalid): \[([\s\S]*?)\n  \],/g)) {
+  const n = (b[2].match(/\{ \.\.\.FILE|\{ filename:|^      \.\.\.FILE/gm) || []).length;
+  if (b[1] === 'valid') valid += n; else invalid += n;
+}
+console.log(valid + ' ' + invalid);
 " 2>/dev/null)
-if [ "${controls:-0}" -ge 40 ]; then
-  ok "$controls valid-code negative controls across the six rules"
+valid_cases=${counts%% *}
+invalid_cases=${counts##* }
+if [ "${valid_cases:-0}" -ge 40 ] && [ "${invalid_cases:-0}" -ge 20 ] &&
+   [ "${valid_cases:-0}" -gt "${invalid_cases:-0}" ]; then
+  ok "$invalid_cases invalid fixtures, each paired against $valid_cases valid ones that must stay quiet"
 else
-  bad "only ${controls:-0} negative controls; every rule needs correct code proving it stays quiet"
+  bad "fixtures are unbalanced: ${valid_cases:-0} valid, ${invalid_cases:-0} invalid. Every rule needs correct code proving it does not fire."
 fi
 
 echo

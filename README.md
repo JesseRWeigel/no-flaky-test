@@ -169,7 +169,7 @@ bash scripts/verify.sh
 
 Ten layers. The ones doing real work:
 
-- **Negative controls.** Every invalid unit case is paired with valid code that must stay silent,
+- **Negative controls.** 26 invalid fixtures against **56 valid ones that must stay silent**,
   and `test/corpus/correct.test.ts` is a whole file of correct code using every construct the
   rules look for, which must produce exactly zero findings. Two rules were found dead by these
   tests: `calleeName()` returns null for a `new` expression, which had silently disabled the
@@ -246,8 +246,11 @@ warnings, for dropping into a suite that already has flakes.
   ok    6 rules, both presets
 
 2. unit suite (every invalid case paired with a valid negative control)
-  ok     unit tests passed
-  ok    82 valid-code negative controls across the six rules
+        ℹ tests 9
+        ℹ pass 9
+        ℹ fail 0
+  ok    9 test cases passed, covering 82 rule fixtures
+  ok    26 invalid fixtures, each paired against 56 valid ones that must stay quiet
 
 3. the rules against real test suites
         corpus: 1912 test files, 277942 lines
@@ -328,7 +331,7 @@ warnings, for dropping into a suite that already has flakes.
   ok    no credential-shaped strings in tracked files
   ok    no dependencies or tarballs are tracked
   ok    no tracked file over 400 KB
-        31 tracked files, none contain NUL
+        32 tracked files, none contain NUL
   ok    no tracked file is binary to the secret scan
 
 23 passed, 0 failed
