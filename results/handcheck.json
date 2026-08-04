@@ -1,0 +1,730 @@
+{
+  "_comment": [
+    "Every finding the rules produced on the corpus, read by hand and given a verdict.",
+    "Not a sample: 99 of 99. scripts/check-handcheck.mjs fails if the rules produce a finding",
+    "that is not listed here, or if a listed finding stops being produced, so this file cannot",
+    "quietly drift away from what the code does.",
+    "",
+    "flake       a real intermittent-failure mechanism; the author would want to know",
+    "intentional the code IS nondeterministic and the author put it there on purpose,",
+    "            usually fuzz or chaos testing. The rule is right and the answer is a disable",
+    "            comment, so this counts against usability and not against correctness.",
+    "false       the rule is wrong: no sequence of events can make this test fail"
+  ],
+  "verdicts": [
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "battlemath/src/AppReducer.test.ts",
+      "line": 1171,
+      "note": "random input to generateChoices, asserted with toContain"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "@lezer/html@1.3.10/test/test-incremental.js",
+      "line": 6,
+      "note": "random document generator for incremental parse fuzzing"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "@lezer/markdown@1.4.3/test/test-incremental.ts",
+      "line": 119,
+      "note": "same fuzzer"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "atomically@2.0.3/test/basic.cjs",
+      "line": 116,
+      "note": "simulated unstable filesystem, 75% failure injection"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "atomically@2.0.3/test/basic.cjs",
+      "line": 117,
+      "note": "random errno pick"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "atomically@2.0.3/test/basic.cjs",
+      "line": 126,
+      "note": "second unstable helper"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "atomically@2.0.3/test/basic.cjs",
+      "line": 127,
+      "note": "random errno pick"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "browserify-zlib@0.1.4/test/test-zlib-random-byte-pipes.js",
+      "line": 91,
+      "note": "random block jitter, the file name says so"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "browserify-zlib@0.1.4/test/test-zlib-random-byte-pipes.js",
+      "line": 96,
+      "note": "random byte payload"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "discontinuous-range@1.0.0/test/main-test.js",
+      "line": 95,
+      "note": "picks a random member then asserts on it; a failure names a number nobody can reproduce"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 20,
+      "note": "random world fill"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 67,
+      "note": "random coordinates, x of 3 on the line"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 67,
+      "note": "random coordinates"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 67,
+      "note": "random coordinates"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 79,
+      "note": "random world fill"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 127,
+      "note": "random coordinates"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 127,
+      "note": "random coordinates"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "prismarine-world@3.7.0/test/test.js",
+      "line": 127,
+      "note": "random coordinates"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "rc@1.2.8/test/nested-env-vars.js",
+      "line": 2,
+      "note": "seed only builds a unique env-var prefix; nothing asserts on it"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "regexp.prototype.flags@1.5.4/test/tests.js",
+      "line": 60,
+      "note": "shuffles flags on purpose to test normalisation"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "rfdc@1.3.0/test/index.js",
+      "line": 11,
+      "note": "random fixture generator for clone tests"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "rfdc@1.4.1/test/index.js",
+      "line": 11,
+      "note": "same"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "through@2.3.8/test/index.js",
+      "line": 43,
+      "note": "the same random array is both the input and the expected value"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "through@2.3.8/test/index.js",
+      "line": 64,
+      "note": "same"
+    },
+    {
+      "v": "intentional",
+      "rule": "no-unseeded-random",
+      "file": "through@2.3.8/test/index.js",
+      "line": 99,
+      "note": "random pause injection to exercise backpressure"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "troika-worker-utils@0.52.0/__tests__/WorkerModules.test.js",
+      "line": 281,
+      "note": "a unique value per worker; the source comment says so"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.22.3/lib/__tests__/Mocker.js",
+      "line": 5,
+      "note": "random test data feeding schema assertions"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.22.3/lib/__tests__/Mocker.js",
+      "line": 18,
+      "note": "random number fixture"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.22.3/lib/__tests__/Mocker.js",
+      "line": 21,
+      "note": "random bigint fixture"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.22.3/lib/__tests__/Mocker.js",
+      "line": 24,
+      "note": "random boolean fixture"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.22.3/lib/__tests__/Mocker.js",
+      "line": 27,
+      "note": "random date fixture"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.25.76/src/v3/tests/Mocker.ts",
+      "line": 2,
+      "note": "same generator in TypeScript"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.25.76/src/v3/tests/Mocker.ts",
+      "line": 16,
+      "note": "random number fixture"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.25.76/src/v3/tests/Mocker.ts",
+      "line": 19,
+      "note": "random bigint fixture"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.25.76/src/v3/tests/Mocker.ts",
+      "line": 22,
+      "note": "random boolean fixture"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.25.76/src/v3/tests/Mocker.ts",
+      "line": 25,
+      "note": "random date fixture"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.25.76/src/v4/classic/tests/discriminated-unions.test.ts",
+      "line": 25,
+      "note": "transform returns a random number that the assertion never looks at"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "zod@3.25.76/src/v4/classic/tests/primitive.test.ts",
+      "line": 71,
+      "note": "numberSchema.parse(Math.random()) as a smoke call; every number parses"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "zod@4.3.6/src/v4/classic/tests/discriminated-unions.test.ts",
+      "line": 25,
+      "note": "same as above"
+    },
+    {
+      "v": "false",
+      "rule": "no-unseeded-random",
+      "file": "zod@4.4.3/src/v4/classic/tests/discriminated-unions.test.ts",
+      "line": 25,
+      "note": "same as above"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "HunterPath/client/src/lib/game/questSystem.test.ts",
+      "line": 23,
+      "note": "builds today's MM/DD from the clock and compares; fails across midnight"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "battlemath/src/utils/DailyChallenge.test.ts",
+      "line": 89,
+      "note": "rebuilds today's key from the clock and compares"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "battlemath/src/utils/DailyChallenge.test.ts",
+      "line": 107,
+      "note": "walks back five days from today and asserts a streak"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "battlemath/src/utils/DailyChallenge.test.ts",
+      "line": 118,
+      "note": "same, with a gap"
+    },
+    {
+      "v": "false",
+      "rule": "no-unmocked-time",
+      "file": "react-day-picker@8.10.1/src/contexts/Modifiers/utils/isMatch.test.ts",
+      "line": 13,
+      "note": "testDay is both the input and the matcher, so getDay() is self-consistent"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "bolt-research/bolt.diy/app/lib/runtime/message-parser.spec.ts",
+      "line": 723,
+      "note": "asserts under 1ms average per operation"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "thousand/projects/json-typestack/test/robustness.test.js",
+      "line": 65,
+      "note": "asserts a 20 second budget"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "thousand/projects/modules-treemap/test/walk.test.mjs",
+      "line": 150,
+      "note": "asserts a 20 second budget"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "exponential-backoff@3.1.3/src/backoff.spec.ts",
+      "line": 81,
+      "note": "rounds elapsed to 100ms and asserts the bucket"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "exponential-backoff@3.1.3/src/backoff.spec.ts",
+      "line": 96,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "exponential-backoff@3.1.3/src/backoff.spec.ts",
+      "line": 148,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "exponential-backoff@3.1.3/src/backoff.spec.ts",
+      "line": 187,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "minecraft-protocol@1.66.2/test/serverTest.js",
+      "line": 532,
+      "note": "throws when two packets arrive more than 1ms apart"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "mineflayer-pathfinder@2.4.5/test/internalTest.js",
+      "line": 807,
+      "note": "pathfinder timing measurement"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@1.22.11/test/resolver_sync.js",
+      "line": 539,
+      "note": "asserts resolve.sync finishes within 50ms"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@1.22.11/test/resolver_sync.js",
+      "line": 557,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@1.22.11/test/resolver.js",
+      "line": 427,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@1.22.11/test/resolver.js",
+      "line": 438,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@1.22.11/test/symlinks.js",
+      "line": 76,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.5/test/resolver_sync.js",
+      "line": 535,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.5/test/resolver_sync.js",
+      "line": 553,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.5/test/resolver.js",
+      "line": 443,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.5/test/resolver.js",
+      "line": 454,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.6/test/resolver_sync.js",
+      "line": 535,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.6/test/resolver_sync.js",
+      "line": 553,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.6/test/resolver.js",
+      "line": 443,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.6/test/resolver.js",
+      "line": 454,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unmocked-time",
+      "file": "resolve@2.0.0-next.6/test/symlinks.js",
+      "line": 78,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "thousand/projects/stroke-order/test/page.test.js",
+      "line": 189,
+      "note": "150ms sleep after a viewport resize, then measures layout"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "thousand/projects/stroke-order/test/page.test.js",
+      "line": 247,
+      "note": "60ms sleep before reading animation state"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "thousand/projects/stroke-order/test/page.test.js",
+      "line": 250,
+      "note": "60ms sleep before reading animation state"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "mineflayer-pathfinder@2.4.5/test/internalTest.js",
+      "line": 300,
+      "note": "setTimeout(done, 100) ends the hook on a timer"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "mineflayer-pathfinder@2.4.5/test/internalTest.js",
+      "line": 344,
+      "note": "setTimeout(done) with no delay at all"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "mineflayer-pathfinder@2.4.5/test/internalTest.js",
+      "line": 837,
+      "note": "setTimeout(done, 100)"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "mineflayer-pathfinder@2.4.5/test/internalTest.js",
+      "line": 1013,
+      "note": "setTimeout(done, 100)"
+    },
+    {
+      "v": "flake",
+      "rule": "no-live-network",
+      "file": "thousand/projects/should-i-install/test/verify.js",
+      "line": 374,
+      "note": "fetches registry.npmjs.org during the suite"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "pg-protocol@1.7.0/src/inbound-parser.test.ts",
+      "line": 478,
+      "note": "async helper dropped inside a synchronous it()"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "pg-protocol@1.7.0/src/inbound-parser.test.ts",
+      "line": 482,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "pg-protocol@1.7.0/src/inbound-parser.test.ts",
+      "line": 486,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "pg-protocol@1.7.0/src/inbound-parser.test.ts",
+      "line": 487,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "pg-protocol@1.7.0/src/inbound-parser.test.ts",
+      "line": 488,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "simple-update-notifier@2.0.0/src/getDistVersion.spec.ts",
+      "line": 32,
+      "note": "expect(...).rejects.toThrow() with no await; passes whatever happens"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.3.6/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 689,
+      "note": "async validateOpenAPI30Schema dropped, so the OpenAPI validation never runs"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.3.6/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 701,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.3.6/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 723,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.3.6/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 867,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.3.6/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 1085,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.3.6/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 1108,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.3.6/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 1133,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.4.3/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 730,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.4.3/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 742,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.4.3/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 764,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.4.3/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 908,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.4.3/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 1126,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.4.3/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 1149,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-floating-promise",
+      "file": "zod@4.4.3/src/v4/classic/tests/to-json-schema.test.ts",
+      "line": 1174,
+      "note": "same"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unordered-assert",
+      "file": "@jspm/core@2.1.0/test/fs.test.js",
+      "line": 8,
+      "note": "the line above sorts both sides and this one does not"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unordered-assert",
+      "file": "tar-fs@2.1.4/test/index.js",
+      "line": 291,
+      "note": "deepEqual on an unsorted readdirSync"
+    },
+    {
+      "v": "flake",
+      "rule": "no-unordered-assert",
+      "file": "tar-fs@2.1.4/test/index.js",
+      "line": 293,
+      "note": "deepEqual on an unsorted readdirSync"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "pg-pool@3.7.0/test/idle-timeout.js",
+      "line": 62,
+      "note": "yield wait(2) then asserts idleCount is 0"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "pg-pool@3.7.0/test/idle-timeout.js",
+      "line": 79,
+      "note": "yield wait(10) then asserts pool state"
+    },
+    {
+      "v": "flake",
+      "rule": "no-bare-timeout",
+      "file": "pg-pool@3.7.0/test/lifetime-timeout.js",
+      "line": 39,
+      "note": "100ms sleep then asserts expiredCount is 0"
+    }
+  ]
+}
