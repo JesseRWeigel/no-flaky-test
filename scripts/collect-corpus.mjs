@@ -12,7 +12,8 @@
 // Nothing from either corpus is copied into this repository. Only counts, relative paths, and
 // package names leave this script.
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 
@@ -64,6 +65,44 @@ function isTestPath(rel, name) {
   return TEST_NAME.test(name) || TEST_DIR.test(`/${rel}`);
 }
 
+/**
+ * Label a working-tree file by its own repository rather than by its position under the corpus
+ * root: `<repository directory>/<path inside the repository>`.
+ *
+ * Path-from-the-root labelling looked fine until the results were about to be published. A
+ * nested checkout produced labels like `<outer>/projects/<inner>/test/x.js`, which names a
+ * directory the reader has no business knowing about and which is not where the file lives as far
+ * as its own history is concerned. Walking up to the nearest .git gives the repository that
+ * actually owns the file.
+ */
+const repoRootCache = new Map();
+function repoLabel(full, root) {
+  let dir = path.dirname(full);
+  const chain = [];
+  while (dir.startsWith(root) && dir !== root) {
+    if (repoRootCache.has(dir)) { const hit = repoRootCache.get(dir); chain.forEach((d) => repoRootCache.set(d, hit)); if (hit) return relabel(full, hit); break; }
+    if (existsSync(path.join(dir, '.git'))) {
+      chain.forEach((d) => repoRootCache.set(d, dir));
+      repoRootCache.set(dir, dir);
+      return relabel(full, dir);
+    }
+    chain.push(dir);
+    dir = path.dirname(dir);
+  }
+  chain.forEach((d) => repoRootCache.set(d, null));
+  return path.relative(root, full).split(path.sep).join('/');
+}
+
+function relabel(full, repoRoot) {
+  const inside = path.relative(repoRoot, full).split(path.sep).join('/');
+  return `${path.basename(repoRoot)}/${inside}`;
+}
+
+// This project lives inside the corpus directory on the machine it was written on, and
+// test/corpus/sabotage.test.ts is deliberately flaky. Measuring itself would put eleven findings
+// of its own making into the numbers it reports.
+const SELF = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
 export function collect(root) {
   const own = [];
   const vendor = [];
@@ -72,6 +111,7 @@ export function collect(root) {
   walk(root, {
     intoNodeModules: true,
     onFile(full) {
+      if (full.startsWith(SELF + path.sep)) return;
       const rel = path.relative(root, full).split(path.sep).join('/');
       const name = path.basename(full);
       if (!isTestPath(rel, name)) return;
@@ -107,7 +147,7 @@ export function collect(root) {
           label: `${pkg}@${versionOf(pkgRoot)}/${parts.slice(pkg.split('/').length).join('/')}`,
         });
       } else {
-        own.push({ path: full, label: rel });
+        own.push({ path: full, label: repoLabel(full, root) });
       }
     },
   });

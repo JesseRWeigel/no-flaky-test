@@ -260,6 +260,9 @@ run('no-live-network', {
     { ...FILE, code: `it('x', async () => { await fetch('http://127.0.0.1:8080/a'); });` },
     { ...FILE, code: `import { setupServer } from 'msw/node';\nit('x', async () => { await fetch('https://api.example.com/a'); });` },
     { ...FILE, code: `import nock from 'nock';\nit('x', async () => { await fetch('https://registry.npmjs.org/left-pad'); });` },
+    // setupServer() re-exported from a local helper, so there is no msw import to recognise.
+    { ...FILE, code: `const server = setupServer();\nit('x', async () => { await fetch('https://api.example.com/v1'); });` },
+    { ...FILE, code: `const agent = new MockAgent();\nit('x', async () => { await fetch('https://api.example.com/v1'); });` },
     { ...FILE, code: `globalThis.fetch = vi.fn();\nit('x', async () => { await fetch('https://api.stripe.com/v1'); });` },
     { ...FILE, code: `it('x', async () => { await fetch('http://example.invalid/a'); });` },
   ],
@@ -309,4 +312,26 @@ test('every rule has a docs page, a url, and a message for every messageId', asy
     // The flake mechanism has to be written down, which is the whole point of the docs page.
     assert.ok(/## Why this is flaky/.test(text), `docs/rules/${id}.md has no mechanism section`);
   }
+});
+
+test('the whole-file controls behave', async () => {
+  const { lintAll } = await import('../scripts/scan.mjs');
+  const path = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+  const here = path.dirname(fileURLToPath(import.meta.url));
+
+  // correct.test.ts uses every construct the rules look for, written correctly. Expression-level
+  // tests can miss a rule that only over-reports in a larger file, and over-reporting is the
+  // failure that gets a lint plugin uninstalled.
+  const good = await lintAll([{ path: path.join(here, 'corpus/correct.test.ts'), label: 'correct.test.ts' }]);
+  assert.equal(good.parseFailures.length, 0, JSON.stringify(good.parseFailures));
+  assert.equal(good.notLinted.length, 0, JSON.stringify(good.notLinted));
+  assert.deepEqual(good.findings, [], 'correct.test.ts must produce no findings');
+
+  // sabotage.test.ts is deliberately flaky and must trip all six rules.
+  const bad = await lintAll([{ path: path.join(here, 'corpus/sabotage.test.ts'), label: 'sabotage.test.ts' }]);
+  assert.equal(bad.parseFailures.length, 0, JSON.stringify(bad.parseFailures));
+  const rules = new Set(bad.findings.map((f) => f.rule));
+  assert.equal(rules.size, 6, `expected all six rules to fire, got ${[...rules].sort().join(', ')}`);
+  assert.equal(bad.findings.length, 11, `expected 11 findings, got ${bad.findings.length}`);
 });

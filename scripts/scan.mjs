@@ -158,9 +158,27 @@ async function main() {
   const argv = process.argv.slice(2);
   let corpus = null;
   let explicit = [];
+  let list = null;
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--corpus') corpus = path.resolve(argv[++i]);
+    else if (argv[i] === '--list') list = path.resolve(argv[++i]);
     else if (argv[i] === '--files') explicit = argv.slice(i + 1).map((p) => path.resolve(p));
+  }
+  // --list pins the exact files to scan. Other work on this machine adds and removes test files
+  // while this runs, so two --corpus scans a second apart can legitimately differ, and a
+  // determinism check has to hold the input still to mean anything.
+  if (list) {
+    const pinned = JSON.parse(readFileSync(list, 'utf8'));
+    const own = await lintAll(pinned.own);
+    const stagedPinned = stage(pinned.vendor);
+    let vendor;
+    try { vendor = await lintAll(stagedPinned.entries); } finally { stagedPinned.cleanup(); }
+    for (const half of [own, vendor]) {
+      for (const item of half.notLinted) console.error(`NOT LINTED: ${item.file}: ${item.reason}`);
+    }
+    if (own.notLinted.length || vendor.notLinted.length) process.exitCode = 4;
+    process.stdout.write(JSON.stringify({ own, vendor }, null, 2) + '\n');
+    return;
   }
   if (!corpus && explicit.length === 0) {
     console.error('usage: scan.mjs --corpus <dir> | --files <file...>');

@@ -1,7 +1,7 @@
 {
   "_comment": [
     "Every finding the rules produced on the corpus, read by hand and given a verdict.",
-    "Not a sample: 99 of 99. scripts/check-handcheck.mjs fails if the rules produce a finding",
+    "Not a sample: 102 of 102. scripts/check-corpus.mjs fails if the rules produce a finding",
     "that is not listed here, or if a listed finding stops being produced, so this file cannot",
     "quietly drift away from what the code does.",
     "",
@@ -330,21 +330,21 @@
     {
       "v": "flake",
       "rule": "no-unmocked-time",
-      "file": "bolt-research/bolt.diy/app/lib/runtime/message-parser.spec.ts",
+      "file": "bolt.diy/app/lib/runtime/message-parser.spec.ts",
       "line": 723,
       "note": "asserts under 1ms average per operation"
     },
     {
       "v": "flake",
       "rule": "no-unmocked-time",
-      "file": "thousand/projects/json-typestack/test/robustness.test.js",
+      "file": "json-typestack/test/robustness.test.js",
       "line": 65,
       "note": "asserts a 20 second budget"
     },
     {
       "v": "flake",
       "rule": "no-unmocked-time",
-      "file": "thousand/projects/modules-treemap/test/walk.test.mjs",
+      "file": "modules-treemap/test/walk.test.mjs",
       "line": 150,
       "note": "asserts a 20 second budget"
     },
@@ -491,21 +491,21 @@
     {
       "v": "flake",
       "rule": "no-bare-timeout",
-      "file": "thousand/projects/stroke-order/test/page.test.js",
+      "file": "stroke-order/test/page.test.js",
       "line": 189,
       "note": "150ms sleep after a viewport resize, then measures layout"
     },
     {
       "v": "flake",
       "rule": "no-bare-timeout",
-      "file": "thousand/projects/stroke-order/test/page.test.js",
+      "file": "stroke-order/test/page.test.js",
       "line": 247,
       "note": "60ms sleep before reading animation state"
     },
     {
       "v": "flake",
       "rule": "no-bare-timeout",
-      "file": "thousand/projects/stroke-order/test/page.test.js",
+      "file": "stroke-order/test/page.test.js",
       "line": 250,
       "note": "60ms sleep before reading animation state"
     },
@@ -540,7 +540,7 @@
     {
       "v": "flake",
       "rule": "no-live-network",
-      "file": "thousand/projects/should-i-install/test/verify.js",
+      "file": "should-i-install/test/verify.js",
       "line": 374,
       "note": "fetches registry.npmjs.org during the suite"
     },

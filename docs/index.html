@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eslint-plugin-no-flaky-test</title>
+<meta name="description" content="Six ESLint rules for the mechanisms that make JavaScript tests flaky, measured for false positives against 1912 real test files.">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfbfa; --fg: #1a1a19; --dim: #64645f; --line: #dededa;
+    --card: #ffffff; --good: #1a7f4b; --warn: #9a6700; --bad: #b42318; --accent: #2b50aa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14140f; --fg: #ececea; --dim: #9a9a92; --line: #2e2e28;
+      --card: #1c1c17; --good: #4ec27f; --warn: #d9a441; --bad: #f2695c; --accent: #8ab0ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 62rem; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
+  h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.15; margin: 0 0 .4rem; letter-spacing: -.02em; }
+  h2 { font-size: 1.25rem; margin: 3rem 0 .75rem; letter-spacing: -.01em; }
+  p.lede { font-size: 1.1rem; color: var(--dim); margin: 0 0 2rem; max-width: 46rem; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
+  a { color: var(--accent); }
+  .stats { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); margin: 0 0 1rem; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: .6rem; padding: 1rem; }
+  .stat b { display: block; font-size: 1.9rem; line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--dim); font-size: .85rem; }
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: .6rem; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; min-width: 40rem; }
+  th, td { text-align: left; padding: .7rem .9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+  thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--dim); font-weight: 600; }
+  tbody th { font-weight: 600; }
+  tbody th span { display: block; font-weight: 400; color: var(--dim); font-size: .85rem; margin-top: .15rem; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .good { color: var(--good); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  ul.kv { list-style: none; padding: 0; margin: 0; display: grid; gap: .3rem;
+          grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+  ul.kv li { display: flex; justify-content: space-between; gap: 1rem;
+             background: var(--card); border: 1px solid var(--line); border-radius: .4rem; padding: .45rem .7rem; }
+  ul.kv b { font-variant-numeric: tabular-nums; }
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: .6rem;
+        padding: 1rem; overflow-x: auto; font-size: .88rem; line-height: 1.5; }
+  footer { margin-top: 4rem; color: var(--dim); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+  .note { color: var(--dim); font-size: .9rem; max-width: 46rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>eslint-plugin-no-flaky-test</h1>
+  <p class="lede">Six rules for the mechanisms that actually make JavaScript tests flaky. Every
+  one of them was measured against 1,912 real test files
+  before it shipped, and every finding it produced was read by hand.</p>
+
+  <div class="stats">
+    <div class="stat"><b>1,912</b><span>test files measured</span></div>
+    <div class="stat"><b>277,942</b><span>lines of real test code</span></div>
+    <div class="stat"><b>102</b><span>findings, all hand-checked</span></div>
+    <div class="stat"><b>8.8%</b><span>measured false-positive rate</span></div>
+  </div>
+  <p class="note">The corpus is 312 test files from working projects plus
+  1,600 shipped inside published npm packages,
+  deduplicated by content hash. The second half matters more: it is test code written and
+  reviewed by other people, so if a rule fires there the burden is on the rule.</p>
+
+  <h2>What each rule found, and what it got wrong</h2>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Rule</th>
+          <th scope="col" class="num">Findings</th>
+          <th scope="col" class="num">Real flake</th>
+          <th scope="col" class="num">Deliberate</th>
+          <th scope="col" class="num">False</th>
+          <th scope="col" class="num">FP rate</th>
+        </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th scope="row"><a href="https://github.com/JesseRWeigel/no-flaky-test/blob/main/docs/rules/no-bare-timeout.md"><code>no-bare-timeout</code></a><span>a fixed sleep standing in for a condition nobody expressed</span></th>
+        <td class="num">10</td>
+        <td class="num good">10</td>
+        <td class="num warn">0</td>
+        <td class="num ">0</td>
+        <td class="num">0.0%</td>
+      </tr>
+      <tr>
+        <th scope="row"><a href="https://github.com/JesseRWeigel/no-flaky-test/blob/main/docs/rules/no-unmocked-time.md"><code>no-unmocked-time</code></a><span>the clock deciding an assertion, by calendar, by race, or by machine speed</span></th>
+        <td class="num">28</td>
+        <td class="num good">27</td>
+        <td class="num warn">0</td>
+        <td class="num bad">1</td>
+        <td class="num">3.6%</td>
+      </tr>
+      <tr>
+        <th scope="row"><a href="https://github.com/JesseRWeigel/no-flaky-test/blob/main/docs/rules/no-unseeded-random.md"><code>no-unseeded-random</code></a><span>random input, so a failure names a value nobody can reproduce</span></th>
+        <td class="num">40</td>
+        <td class="num good">12</td>
+        <td class="num warn">20</td>
+        <td class="num bad">8</td>
+        <td class="num">20.0%</td>
+      </tr>
+      <tr>
+        <th scope="row"><a href="https://github.com/JesseRWeigel/no-flaky-test/blob/main/docs/rules/no-floating-promise.md"><code>no-floating-promise</code></a><span>a promise nobody awaits, so its assertions run somewhere else or never</span></th>
+        <td class="num">20</td>
+        <td class="num good">20</td>
+        <td class="num warn">0</td>
+        <td class="num ">0</td>
+        <td class="num">0.0%</td>
+      </tr>
+      <tr>
+        <th scope="row"><a href="https://github.com/JesseRWeigel/no-flaky-test/blob/main/docs/rules/no-unordered-assert.md"><code>no-unordered-assert</code></a><span>an order-sensitive assertion on a collection with no defined order</span></th>
+        <td class="num">3</td>
+        <td class="num good">3</td>
+        <td class="num warn">0</td>
+        <td class="num ">0</td>
+        <td class="num">0.0%</td>
+      </tr>
+      <tr>
+        <th scope="row"><a href="https://github.com/JesseRWeigel/no-flaky-test/blob/main/docs/rules/no-live-network.md"><code>no-live-network</code></a><span>a request to a real host, which fails on DNS, on a rate limit, and offline</span></th>
+        <td class="num">1</td>
+        <td class="num good">1</td>
+        <td class="num warn">0</td>
+        <td class="num ">0</td>
+        <td class="num">0.0%</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note"><b>Real flake</b> is a mechanism that can fail intermittently and the author
+  would want to know about. <b>Deliberate</b> means the code really is nondeterministic and the
+  author put it there on purpose, almost always fuzz or chaos testing; the rule is right and the
+  answer is a disable comment. <b>False</b> means the rule is wrong and no sequence of events can
+  make that test fail. Only the last column counts against correctness.</p>
+
+  <h2>Findings by message</h2>
+  <ul class="kv">
+        <li><code>no-bare-timeout/doneTimer</code><b>4</b></li>
+        <li><code>no-bare-timeout/sleep</code><b>3</b></li>
+        <li><code>no-bare-timeout/waitForTimeout</code><b>3</b></li>
+        <li><code>no-floating-promise/asyncCall</code><b>19</b></li>
+        <li><code>no-floating-promise/expectAsync</code><b>1</b></li>
+        <li><code>no-live-network/live</code><b>1</b></li>
+        <li><code>no-unmocked-time/calendar</code><b>5</b></li>
+        <li><code>no-unmocked-time/elapsed</code><b>23</b></li>
+        <li><code>no-unordered-assert/listing</code><b>3</b></li>
+        <li><code>no-unseeded-random/random</code><b>40</b></li>
+  </ul>
+
+  <h2>Real flakes found in published packages</h2>
+  <p class="note">These are not synthetic examples. Each is a genuine flake mechanism in a package
+  installed on the machine this was measured on.</p>
+  <ul class="kv">
+        <li><code>zod</code><b>24</b></li>
+        <li><code>resolve</code><b>14</b></li>
+        <li><code>mineflayer-pathfinder</code><b>5</b></li>
+        <li><code>pg-protocol</code><b>5</b></li>
+        <li><code>exponential-backoff</code><b>4</b></li>
+        <li><code>pg-pool</code><b>3</b></li>
+        <li><code>tar-fs</code><b>2</b></li>
+        <li><code>discontinuous-range</code><b>1</b></li>
+        <li><code>minecraft-protocol</code><b>1</b></li>
+        <li><code>simple-update-notifier</code><b>1</b></li>
+        <li><code>@jspm/core</code><b>1</b></li>
+  </ul>
+
+  <h2>Install</h2>
+<pre><code>npm i -D eslint-plugin-no-flaky-test
+
+// eslint.config.js
+import noFlakyTest from 'eslint-plugin-no-flaky-test';
+
+export default [
+  {
+    files: ['**/*.{test,spec}.{js,ts,tsx}', '**/__tests__/**'],
+    ...noFlakyTest.configs.recommended,
+  },
+];</code></pre>
+
+  <footer>
+    <a href="https://github.com/JesseRWeigel/no-flaky-test">Source and rule documentation on GitHub</a>.
+    Generated by <code>scripts/build-docs.mjs</code> from <code>results/corpus.json</code> and
+    <code>results/handcheck.json</code>. MIT.
+  </footer>
+</main>
+</body>
+</html>
