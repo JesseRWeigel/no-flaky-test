@@ -124,6 +124,14 @@ export async function lintAll(entries, pluginPath) {
           usable = false;
           continue;
         }
+        // noInlineConfig makes ESLint announce every disable comment it declined to honour. That
+        // is expected here and says nothing about the file. Treated as a parse failure it threw
+        // away 481 of 1600 vendor files while reporting them as unparseable, which is a wrong
+        // number in the safe-looking direction.
+        if (!message.ruleId && /has no effect because you have 'noInlineConfig'/.test(
+          message.message || '')) {
+          continue;
+        }
         if (message.fatal || !message.ruleId) {
           parseFailures.push({ file: entry.label, error: String(message.message).slice(0, 140) });
           usable = false;

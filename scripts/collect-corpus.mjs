@@ -100,7 +100,8 @@ export function collect(root) {
         // Two projects here install different versions of the same package, and their test files
         // differ, so both survive the content-hash dedup and would otherwise share a label. The
         // version disambiguates them and makes a finding traceable.
-        const pkgRoot = full.slice(0, marker + 'node_modules/'.length + pkg.length);
+        const fullMarker = full.lastIndexOf(`node_modules${path.sep}`);
+        const pkgRoot = full.slice(0, fullMarker + `node_modules${path.sep}`.length + pkg.length);
         vendor.push({
           path: full,
           label: `${pkg}@${versionOf(pkgRoot)}/${parts.slice(pkg.split('/').length).join('/')}`,
