@@ -40,14 +40,14 @@ decided in general. Three cases can be decided from syntax alone:
 - `messageId: expectAsync` — an `expect(...)` chain containing `.resolves` or `.rejects` that
   nothing awaits or returns.
 - `messageId: forEachAsync` — an `async` callback passed to `.forEach()`, which discards return
-  values by definition, when that callback contains an `await`.
+  values by definition, even when the callback has no literal `await` (including concise bodies).
 
 ## What is deliberately not reported
 
 - A call given a **callback**. `writeFileAtomic(f, d, err => ...)` is handling completion, just
   not through a promise. Many libraries accept either form, and this carve-out removed the worst
   false positives the rule ever produced.
-- Anything awaited, returned, assigned, spread, put in an array, given to `Promise.all`, or
+- Anything awaited, returned, assigned to a mutable binding/property, spread, put in an array, given to `Promise.all`, or
   chained with `.then` / `.catch` / `.finally`.
 - A **fourth heuristic that was built and then deleted**: reporting a call whose callee is awaited
   somewhere else in the same file. It found 45 sites and all eight sampled by hand were wrong.
@@ -66,3 +66,18 @@ await validateOpenAPI30Schema(jsonSchema);
 await expect(getDistVersion('x', 'latest')).rejects.toThrow('...');
 for (const item of items) await check(item);       // instead of items.forEach(async ...)
 ```
+
+## Stored promises and analysis limits
+
+A `const p = knownAsync()` binding is not itself promise handling. The rule follows
+scope-resolved reads and const aliases, accepting a later `await p`, `return p`,
+or rejection chain while reporting unused bindings. The same check applies to
+stored `expect(...).resolves` / `.rejects` chains. Merely reading `p;` does not
+handle completion; shadowed bindings are distinct.
+
+This remains conservative syntax analysis, not type- or control-flow proof.
+Mutable/destructured bindings, assignments, collections, and passing values to
+unknown callees are treated as escaping the analysis. It does not prove every
+branch awaits a promise, that a helper actually consumes it, or that a nested
+function containing an await is called. Imported non-async-looking APIs still
+require type-aware rules for reliable detection. No automatic fix is offered.
