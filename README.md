@@ -232,6 +232,16 @@ warnings, for dropping into a suite that already has flakes.
 
 ## Status
 
+2026-11-13 development verification for discarded async promises: the unit groups
+and real ESLint CLI regression pass, including unused const bindings, later awaits,
+returns, aliases, shadowing, and async forEach callbacks without a literal await.
+The packed-plugin smoke test also passes. The full local corpus is not included in
+this checkout, so corpus precision/recall and reproducibility have **not** been
+revalidated for these changes. The measurement figures and record below are
+historical, not a claim about the revised rule. Keep this change under review until
+that corpus check is completed.
+
+
 `bash scripts/verify.sh`, run from a clean shell on 2026-08-04:
 
 ```

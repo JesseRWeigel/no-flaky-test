@@ -190,10 +190,23 @@ run('no-floating-promise', {
     { ...FILE, code: `it('x', () => expect(f()).resolves.toBe(1));` },
     // forEach with a synchronous callback is fine.
     { ...FILE, code: `it('x', () => { [1, 2].forEach((n) => { expect(n).toBeGreaterThan(0); }); });` },
-    // An async forEach callback with no await inside cannot be dropping anything interesting.
-    { ...FILE, code: `it('x', () => { [1, 2].forEach(async (n) => { record(n); }); });` },
+    { ...FILE, code: `const load = async () => {}; it('x', async () => { const p = load(); await p; });` },
+    { ...FILE, code: `const load = async () => {}; it('x', () => { const p = load(); return p; });` },
+    { ...FILE, code: `const load = async () => {}; it('x', () => { const p = load(); p.catch(() => {}); });` },
+    { ...FILE, code: `const load = async () => {}; it('x', async () => { const p = load(); const q = p; await q; });` },
+    { ...FILE, code: `const load = async () => {}; it('x', async () => { await Promise.all([1, 2].map(async n => load(n))); });` },
+    { ...FILE, code: `it('x', async () => { const p = expect(f()).resolves.toBe(1); await p; });` },
+    { ...FILE, code: `const load = async () => {}; it('x', async () => { const p = load(); { const p = 1; console.log(p); } await p; });` },
   ],
   invalid: [
+    { ...FILE, code: `it('x', () => { [1, 2].forEach(async n => check(n)); });`, errors: [{ messageId: 'forEachAsync' }] },
+    { ...FILE, code: `it('x', () => { [1, 2].forEach(async n => { record(n); }); });`, errors: [{ messageId: 'forEachAsync' }] },
+    { ...FILE, code: `const load = async () => {}; it('x', () => { const p = load(); });`, errors: [{ messageId: 'asyncCall' }] },
+    { ...FILE, code: `const load = async () => {}; it('x', () => { const p = load(); p; });`, errors: [{ messageId: 'asyncCall' }] },
+    { ...FILE, code: `const load = async () => {}; it('x', () => { const p = load(); if (p) console.log('exists'); });`, errors: [{ messageId: 'asyncCall' }] },
+    { ...FILE, code: `const load = async () => {}; it('x', () => { const p = load(); const q = p; });`, errors: [{ messageId: 'asyncCall' }] },
+    { ...FILE, code: `it('x', () => { const p = expect(f()).resolves.toBe(1); });`, errors: [{ messageId: 'expectAsync' }] },
+    { ...FILE, code: `const load = async () => {}; it('x', async () => { const p = load(); { const p = Promise.resolve(); await p; } });`, errors: [{ messageId: 'asyncCall' }] },
     {
       ...FILE,
       code: `const load = async () => {};\nit('x', () => { load(); });`,

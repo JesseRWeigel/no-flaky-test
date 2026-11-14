@@ -41,7 +41,7 @@
     "eslint": "^9.39.0"
   },
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test test/*.test.mjs",
     "verify": "bash scripts/verify.sh"
   }
 }
